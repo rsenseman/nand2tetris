@@ -1,3 +1,4 @@
+# Developed for nand2tetris course, to translate hack assembly code into bytecode
 import sys
 
 symbols = {

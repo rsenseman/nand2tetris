@@ -1,3 +1,4 @@
+# Developed for nand2tetris course, to translate VM code into Hack Assembly code
 import os
 import sys
 from pathlib import Path
