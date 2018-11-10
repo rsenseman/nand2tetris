@@ -1,0 +1,82 @@
+/**
+ * Implements the Tetris game.
+ */
+
+class TetrisGame {
+  field Board board; // the board of this game
+  field Tetrino tetrino; // the tetrino of this game
+  field int direction; // the direction input by the user:
+                        // 0=none, 1=up, 2=down, 3=left, 4=right
+  field int block_width;
+
+  /** Constructs a new Tetris Game. */
+  constructor TetrisGame new() {
+    // Creates board, scoreboard, etc.
+    do Screen.clearScreen();
+
+    let block_width = 8;
+    let board = Board.new(16, 24, block_width);
+    let tetrino = Tetrino.new(board, block_width);
+
+    return this;
+  }
+
+  /** Disposes this game. */
+  method void dispose() {
+    do board.dispose();
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  /** Runs the game: handles the user's inputs and moves the tetrino accordingly */
+  method void run() {
+    var char key;  // the key currently pressed by the user
+    var boolean exit;
+    var int is_grounded;
+    var int wait_time;
+
+    let exit = false;
+
+    // make first tetrino;
+    let tetrino = Tetrino.new(board, block_width);
+
+    while (~exit) {
+      let wait_time = 500;
+
+      if (is_grounded = 1) {
+        do Memory.deAlloc(tetrino);
+        let tetrino = Tetrino.new(board, block_width);
+      } else {
+        // game over
+        if (is_grounded = 2) {
+          let exit = true;
+        }
+      }
+
+      // If keypress = none, then move block down
+      // If keypress = up, then rotate
+      // If keypress = down, reduce wait time to speed up play
+      // If keypress = left, then move left
+      // If keypress = right, then move right
+      let key = Keyboard.keyPressed();
+      if (key = 81)  { let exit = true; }     // q key
+      if (key = 0) { let direction = 0; }   // no press
+      if (key = 130) { let direction = -1; }   // left arrow
+      if (key = 133) {
+        let direction = 0;
+        let wait_time = 100;
+      }   // down arrow
+      if (key = 132) { let direction = 1; }   // right arrow
+      if (key = 131) { let direction = 2; }   // up arrow
+
+      let is_grounded = tetrino.moveTetrino(direction);
+
+      do Sys.wait(wait_time);  // delays the next movement
+    } // while
+
+    // if exited from quit or game over, fill screen with tiles
+    do board.fill();
+
+    return;
+  }
+}

@@ -1,0 +1,203 @@
+/** Implements a tetrino. */
+class Tetrino {
+  field Board board; // board to which tetrino belongs
+  field int x, y; // screen location of the tetrino's top-left corner
+  field Array tetrino_array; // Length 16 array representing 4x4 tetrino space
+                             // True means space contains value, False means
+                             // space is free
+  field int board_width;
+  field int edge_length;
+
+  field boolean is_grounded_left;
+  field boolean is_grounded_right;
+  field boolean is_grounded_bottom;
+  field boolean is_overflow;
+
+
+  /** Constructs a new tetrino with a given location and size. */
+  constructor Tetrino new(Board Aboard, int Aedge_length) {
+    var int i;
+
+    let board = Aboard;
+    let board_width = board.getWidth();
+    let edge_length = Aedge_length;
+    let x = (board_width / 2) - 1;
+    let y = 1;
+
+    // tetrino is modeled as a boolean array of length 16 (4x4)
+    let tetrino_array = Array.new(16);
+
+    // initialize tetrino to desired shape. In future iterations this
+    // could take on any of the 4-block tetrino shapes
+    let i = 0;
+    while (i < 16) {
+      if ((i = 0) | (i = 4) | (i = 5) | (i = 9)) {
+        let tetrino_array[i] = true;
+      } else {
+        let tetrino_array[i] = false;
+      }
+      let i = i + 1;
+    }
+
+    do draw();
+    return this;
+  }
+
+  method int getX() {
+    return x;
+  }
+
+  method int getY() {
+    return y;
+  }
+
+  method Array getArray() {
+    return tetrino_array;
+  }
+
+  method void check_if_grounded() {
+    // check if tetrino is grounded on any side by other blocks or board edges
+    // or if the piece is overlapping a board position (resulting in a game over)
+    var int i;
+    var int j;
+    var int board_position;
+
+    let i = 0;
+    let board_position = (board_width * y) + x;
+
+    while (i < 4) {
+      let j = 0;
+      while (j < 4) {
+        if (tetrino_array[(i * 4) + j]) {
+          if (~is_grounded_left) {
+            let is_grounded_left = board.isFilled(board_position - 1);
+          }
+          if (~is_grounded_right) {
+            let is_grounded_right = board.isFilled(board_position + 1);
+          }
+          if (~is_grounded_bottom) {
+            let is_grounded_bottom = board.isFilled(board_position + board_width);
+          }
+          if (~is_overflow) {
+            let is_overflow = board.isFilled(board_position);
+          }
+        }
+        let board_position = board_position + 1;
+        let j = j + 1;
+      }
+      let board_position = board_position + board_width - 4;
+      let i = i + 1;
+    }
+  return;
+  }
+
+  method void reset_scan() {
+    // reset grounded variables to false
+    let is_grounded_left = false;
+    let is_grounded_right = false;
+    let is_grounded_bottom = false;
+    let is_overflow = false;
+    return;
+  }
+
+  /** Set is_grounded variables */
+  method void scan() {
+    // set grounded variables to see which directions the block can move and
+    // if the block is grounded or in an invalid position
+    do reset_scan();
+    do check_if_grounded();
+    return;
+  }
+
+  method int moveTetrino(int direction) {
+    // move the block in the specified directions
+    do scan();
+    if (is_grounded_bottom) {
+      do board.absorb(this);
+      if (is_overflow) {
+        return 2;
+      } else {
+        return 1;
+      }
+    } else {
+      do erase();
+      if (direction = -1) {
+        do moveLeft();
+      } else {
+        if (direction = 0) {
+          do moveDown();
+        } else {
+          if (direction = 1) {
+            do moveRight();
+          }
+        }
+      }
+    }
+    do draw();
+    return 0;
+  }
+
+  /** Moves the tetrino down by 1 block. */
+  method void moveDown() {
+    let y = y + 1;
+    return;
+  }
+
+  /** Moves the tetrino left by 1 block. */
+  method void moveLeft() {
+    if (~is_grounded_left) {
+      let x = x - 1;
+    }
+    return;
+  }
+
+   /** Moves the tetrino right by by 1 block. */
+   method void moveRight() {
+     if (~is_grounded_right) {
+       let x = x + 1;
+     }
+     return;
+   }
+
+  method void erase() {
+    var int i;
+    var int j;
+
+    do Screen.setColor(false);
+    let i = 0;
+
+    while (i < 4) {
+      let j = 0;
+      while (j < 4) {
+        if (tetrino_array[(i * 4) + j]) {
+          do Screen.drawRectangle(((x + j) * edge_length) + 1, ((y + i) * edge_length) + 2, ((x + j + 1) * edge_length) - 1, (y + i + 1) * edge_length);
+        }
+        let j = j + 1;
+      }
+      let i = i + 1;
+    }
+  return;
+  }
+
+  method void draw() {
+    var int i;
+    var int j;
+
+    do Screen.setColor(true);
+
+    let i = 0;
+
+    while (i < 4) {
+      let j = 0;
+      while (j < 4) {
+        if (tetrino_array[(i * 4) + j]) {
+          do Screen.drawRectangle(((x + j) * edge_length) + 1, ((y + i) * edge_length) + 2, ((x + j + 1) * edge_length) - 1, (y + i + 1) * edge_length);
+        }
+        let j = j + 1;
+      }
+      let i = i + 1;
+    }
+  return;
+  }
+
+}

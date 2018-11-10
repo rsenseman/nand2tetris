@@ -1,0 +1,121 @@
+/** Implements a Tetris game board. */
+class Board {
+
+  field int width, height; // width and height of board
+  field int edge_length;
+
+  field int score;
+  field Tetrino nextblock;
+
+  field Array board_array;
+
+  /** Constructs a new board with a given location and size. */
+  constructor Board new(int Awidth, int Aheight, int Aedge_length) {
+    var int i;
+    var int j;
+    let width = Awidth;
+    let height = Aheight;
+    let edge_length = Aedge_length;
+
+    // board is modeled as an array of booleans, length (height * width)
+    let board_array = Array.new(width * height);
+
+    // initialize board to all empty spaces except and "invisible" border
+    // used to detect tetrino collisions
+    let i = 0;
+    while (i < height) {
+      let j = 0;
+      while (j < width) {
+        if ((i = 0) | (i = (height-1)) | (j = 0) | (j = (width-1))) {
+          let board_array[(i * width) + j] = true;
+        } else {
+          let board_array[(i * width) + j] = false;
+        }
+        let j = j + 1;
+      }
+      let i = i + 1;
+    }
+
+    do drawEdges();
+    return this;
+  }
+
+   /** Disposes this board. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method int getWidth() {
+     return width;
+   }
+
+   method int getHeight() {
+     return height;
+   }
+
+   method boolean isFilled(int array_position) {
+     return board_array[array_position];
+   }
+
+  method void absorb(Tetrino tetrino) {
+    // when a tetrino is grounded, turn all the "board tiles" to True, so that
+    // future tetrinos can identify which tiles are occupied
+    var int t_x;
+    var int t_y;
+    var Array t_array;
+    var int i;
+    var int j;
+    var int board_position;
+
+    let t_x = tetrino.getX();
+    let t_y = tetrino.getY();
+    let t_array = tetrino.getArray();
+
+    let i = 0;
+    let board_position = (width * t_y) + t_x;
+    while (i < 4) {
+      let j = 0;
+      while (j < 4) {
+        if (t_array[(i * 4) + j]) {
+          let board_array[board_position] = true;
+        }
+        let j = j + 1;
+        let board_position = board_position + 1;
+      }
+      let board_position = board_position + width - 4;
+      let i = i + 1;
+    }
+    return;
+  }
+
+   /** Draws the board edges on the screen. */
+   method void drawEdges() {
+      do Screen.setColor(true);
+      do Screen.drawRectangle(edge_length, edge_length, 1 + ((width-1) * edge_length), 1 + ((height - 1) * edge_length));
+      do Screen.setColor(false);
+      do Screen.drawRectangle(edge_length + 1, edge_length + 1, (width-1) * edge_length, (height - 1) * edge_length);
+      return;
+   }
+
+   method void fill() {
+     // fill all tiles on the board
+     var int i;
+     var int j;
+
+     do Screen.setColor(true);
+
+     let i = 1;
+
+     while (i < (height - 1)) {
+       let j = 1;
+       while (j < (width - 1)) {
+         do Screen.drawRectangle((j * edge_length) + 1, (i * edge_length) + 2, ((j + 1) * edge_length) - 1, (i + 1) * edge_length);
+         let j = j + 1;
+       }
+       let i = i + 1;
+     }
+   return;
+   }
+
+}
