@@ -1,7 +1,7 @@
 # nand2tetris
-Assignments for the class [nand2tetris](https://www.coursera.org/learn/nand2tetris2/) up through project 10, with some development for project 11
+Assignments for the class [nand2tetris](https://www.coursera.org/learn/nand2tetris2/) up through project 10, with some development for project 11.
 
-The assignments build up from developing the fundamental build blocks of computers up to higher level programming (thus the title nand to Tetris. The files in this repository are submissions from the end of the first half through the second half of the full course: A machine language assembler, a Hack (Java-like language) virtual machine, some basic Hack programs, and Hack analyzer including tokenizer and parser. 
+The assignments build up from developing the fundamental build blocks of computers up to higher level programming (thus the title nand to Tetris). The files in this repository are submissions from the end of the first half through the second half of the full course: A machine language assembler, a Hack (Java-like language) virtual machine, some basic Hack programs, and Hack analyzer including tokenizer and parser. 
 
 All in all, this was a fun and very challenging course to learn about the inner working of hardward, software, and how the two interface. 🖥
 
